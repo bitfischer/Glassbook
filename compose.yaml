@@ -1,0 +1,19 @@
+services:
+  glassbook:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '7002:3000'
+    environment:
+      ORIGIN: ${ORIGIN:-}
+      PROTOCOL_HEADER: x-forwarded-proto
+      HOST_HEADER: x-forwarded-host
+      DEFAULT_CURRENCY: EUR
+      BODY_SIZE_LIMIT: 1G
+      MAX_RESTORE_MB: 1024
+      TZ: Europe/Berlin
+    volumes:
+      - glassbook-data:/data
+
+volumes:
+  glassbook-data:

@@ -1,0 +1,9 @@
+node_modules/
+.svelte-kit/
+build/
+data/
+.env
+playwright-report/
+test-results/
+coverage/
+.claude/settings.local.json

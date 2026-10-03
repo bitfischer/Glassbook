@@ -1,0 +1,61 @@
+{
+  "name": "glassbook",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "bitfischer.de",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node build",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "lint": "prettier --check . && eslint . && node scripts/sync-headers.mjs --check",
+    "headers:sync": "node scripts/sync-headers.mjs",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "playwright test",
+    "db:generate": "drizzle-kit generate",
+    "images:rebuild": "node scripts/rebuild-images.mjs"
+  },
+  "dependencies": {
+    "@sveltejs/adapter-node": "latest",
+    "@sveltejs/kit": "latest",
+    "argon2": "latest",
+    "better-sqlite3": "latest",
+    "drizzle-orm": "latest",
+    "pdf-lib": "^1.17.1",
+    "sharp": "latest",
+    "svelte": "latest",
+    "tar-stream": "^3.2.0",
+    "zod": "latest"
+  },
+  "overrides": {
+    "cookie": "0.7.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@playwright/test": "latest",
+    "@sveltejs/vite-plugin-svelte": "latest",
+    "@types/better-sqlite3": "latest",
+    "@types/node": "latest",
+    "@types/tar-stream": "^3.1.4",
+    "drizzle-kit": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-svelte": "latest",
+    "globals": "latest",
+    "prettier": "latest",
+    "prettier-plugin-svelte": "latest",
+    "svelte-check": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vite": "latest",
+    "vitest": "latest"
+  }
+}
