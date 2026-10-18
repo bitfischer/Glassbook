@@ -161,6 +161,7 @@
         <a
           class="lightbox-original"
           href={`/images/${current.id}/original`}
+          data-online-only
           target="_blank"
           rel="noreferrer">View original</a
         >

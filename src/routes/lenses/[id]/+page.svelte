@@ -87,10 +87,12 @@
     <span class="badge">{data.lens.ownership}</span>
   </div>
   <div class="form-actions">
-    <form method="POST" action="?/duplicate">
+    <form data-online-only method="POST" action="?/duplicate">
       <button class="ghost" type="submit">Duplicate</button>
     </form>
-    <a class="button quiet-on-phone" href={`/lenses/${data.lens.id}/edit`}>Edit lens</a>
+    <a class="button quiet-on-phone" href={`/lenses/${data.lens.id}/edit`} data-online-only
+      >Edit lens</a
+    >
   </div>
 </div>
 
@@ -98,7 +100,7 @@
   <section>
     <Gallery photos={data.photos} alt={`${data.lens.manufacturer} ${data.lens.model}`} />
 
-    <details class="manage-photos card" open={!data.photos.length}>
+    <details data-online-only class="manage-photos card" open={!data.photos.length}>
       <summary>Manage photos</summary>
 
       {#if data.photos.length}
@@ -108,7 +110,7 @@
               <img src={`/images/${photo.id}/thumbnail`} alt={photo.originalName} />
               <div class="manage-actions">
                 {#if photo.isCover}<span class="badge">cover</span>{/if}
-                <form method="POST" action="?/movePhoto">
+                <form data-online-only method="POST" action="?/movePhoto">
                   <input type="hidden" name="photoId" value={photo.id} />
                   <input type="hidden" name="direction" value="up" />
                   <button
@@ -118,7 +120,7 @@
                     aria-label="Move photo earlier">←</button
                   >
                 </form>
-                <form method="POST" action="?/movePhoto">
+                <form data-online-only method="POST" action="?/movePhoto">
                   <input type="hidden" name="photoId" value={photo.id} />
                   <input type="hidden" name="direction" value="down" />
                   <button
@@ -129,12 +131,12 @@
                   >
                 </form>
                 {#if !photo.isCover}
-                  <form method="POST" action="?/cover">
+                  <form data-online-only method="POST" action="?/cover">
                     <input type="hidden" name="photoId" value={photo.id} />
                     <button class="ghost small" type="submit">Make cover</button>
                   </form>
                 {/if}
-                <form method="POST" action="?/deletePhoto">
+                <form data-online-only method="POST" action="?/deletePhoto">
                   <input type="hidden" name="photoId" value={photo.id} />
                   <button class="danger small" type="submit">Remove</button>
                 </form>
@@ -144,7 +146,13 @@
         </ul>
       {/if}
 
-      <form method="POST" action="?/upload" enctype="multipart/form-data" class="upload-form stack">
+      <form
+        data-online-only
+        method="POST"
+        action="?/upload"
+        enctype="multipart/form-data"
+        class="upload-form stack"
+      >
         <label>
           Add photo (JPEG, PNG, or WebP)
           <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
@@ -214,7 +222,7 @@
                       <a href={`/images/${photoId}/gallery`} target="_blank">
                         <img src={`/images/${photoId}/thumbnail`} alt="" loading="lazy" />
                       </a>
-                      <form method="POST" action="?/detachEntryImage">
+                      <form data-online-only method="POST" action="?/detachEntryImage">
                         <input type="hidden" name="entryId" value={entry.id} />
                         <input type="hidden" name="photoId" value={photoId} />
                         <button class="ghost small" type="submit">Detach</button>
@@ -223,9 +231,17 @@
                   {/each}
                 </div>
               {/if}
-              <details open={form?.entryAction === 'update' && form.entryId === entry.id}>
+              <details
+                data-online-only
+                open={form?.entryAction === 'update' && form.entryId === entry.id}
+              >
                 <summary>Edit</summary>
-                <form method="POST" action="?/updateEntry" class="stack entry-edit-form">
+                <form
+                  data-online-only
+                  method="POST"
+                  action="?/updateEntry"
+                  class="stack entry-edit-form"
+                >
                   <input type="hidden" name="entryId" value={entry.id} />
                   <label>
                     Entry type
@@ -274,11 +290,13 @@
                 </form>
               </details>
               <details
+                data-online-only
                 class="memory-image-manager"
                 open={form?.entryAction === 'images' && form.entryId === entry.id}
               >
                 <summary>Add images</summary>
                 <form
+                  data-online-only
                   method="POST"
                   action="?/attachEntryImages"
                   enctype="multipart/form-data"
@@ -302,6 +320,7 @@
                 </form>
               </details>
               <form
+                data-online-only
                 method="POST"
                 action="?/deleteEntry"
                 class="entry-delete"
@@ -327,9 +346,17 @@
           {#each lensNotes as entry (entry.id)}
             <article class="journal-entry card">
               <p class="entry-body">{entry.body}</p>
-              <details open={form?.entryAction === 'update' && form.entryId === entry.id}>
+              <details
+                data-online-only
+                open={form?.entryAction === 'update' && form.entryId === entry.id}
+              >
                 <summary>Edit</summary>
-                <form method="POST" action="?/updateEntry" class="stack entry-edit-form">
+                <form
+                  data-online-only
+                  method="POST"
+                  action="?/updateEntry"
+                  class="stack entry-edit-form"
+                >
                   <input type="hidden" name="entryId" value={entry.id} />
                   <label>
                     Entry type
@@ -375,6 +402,7 @@
                 </form>
               </details>
               <form
+                data-online-only
                 method="POST"
                 action="?/deleteEntry"
                 class="entry-delete"
@@ -395,6 +423,7 @@
   </div>
 
   <details
+    data-online-only
     class="entry-add"
     open={!data.entries.length ||
       (form?.entryAction === 'create' &&
@@ -402,6 +431,7 @@
   >
     <summary class="button ghost">Add a memory or note</summary>
     <form
+      data-online-only
       method="POST"
       action="?/createEntry"
       enctype="multipart/form-data"
@@ -453,10 +483,11 @@
   </details>
 </section>
 
-<details class="danger-zone">
+<details data-online-only class="danger-zone">
   <summary>Delete this lens</summary>
   <p class="muted">This removes the lens, its photos and its journal. It cannot be undone.</p>
   <form
+    data-online-only
     method="POST"
     action="?/delete"
     onsubmit={(event) => {

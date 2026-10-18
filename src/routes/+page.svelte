@@ -161,7 +161,7 @@
     <div class="empty card">
       <h2>Your archive is waiting.</h2>
       <p class="muted">Add your first lens to start the collection.</p>
-      <a class="button" href="/lenses/new">Add a lens</a>
+      <a class="button" href="/lenses/new" data-online-only>Add a lens</a>
     </div>
   {/if}
 </section>

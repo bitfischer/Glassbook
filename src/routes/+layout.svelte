@@ -8,12 +8,20 @@
 -->
 
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto, invalidateAll } from '$app/navigation';
   import { page } from '$app/state';
-  import { tick } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import '../app.css';
   import BrandLogo from '$lib/components/BrandLogo.svelte';
   import NavIcon from '$lib/components/NavIcon.svelte';
+  import { connection, markOnline } from '$lib/offline/connection.svelte';
+  import {
+    clearOfflineData,
+    loadSyncedAt,
+    probeServer,
+    syncMirror,
+    syncMirrorSoon
+  } from '$lib/offline/sync';
   import { applyTheme, readThemePreference, type Theme } from '$lib/theme';
 
   let { data, children } = $props();
@@ -46,6 +54,52 @@
     if (pathname.startsWith('/settings')) return 3;
     return 0;
   }
+
+  const PROBE_INTERVAL = 15_000;
+  const SYNC_INTERVAL = 5 * 60_000;
+
+  async function reconnect() {
+    if (!connection.offline || !(await probeServer())) return;
+    markOnline();
+    await syncMirror();
+    await invalidateAll();
+  }
+
+  // Keeps the offline mirror current: on start, when the server becomes reachable again, when the
+  // app returns to the foreground and after navigations, and periodically while it stays open.
+  onMount(() => {
+    void loadSyncedAt();
+    if (!connection.offline) void syncMirror();
+    const wake = () => (connection.offline ? reconnect() : syncMirrorSoon());
+    const onVisible = () => document.visibilityState === 'visible' && void wake();
+    const timer = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      if (connection.offline) void reconnect();
+      else void syncMirrorSoon(SYNC_INTERVAL);
+    }, PROBE_INTERVAL);
+    window.addEventListener('online', wake);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', wake);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  });
+
+  afterNavigate(() => void syncMirrorSoon());
+
+  $effect(() => {
+    if (!data.user && !connection.offline) void clearOfflineData();
+  });
+
+  const syncedLabel = $derived(
+    connection.syncedAt
+      ? new Date(connection.syncedAt).toLocaleString(undefined, {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        })
+      : null
+  );
 
   const pathname = $derived(page.url.pathname);
   const isFormRoute = $derived(
@@ -169,7 +223,9 @@
         </div>
       {/if}
       <div class="topbar-navigation">
-        <a href="/lenses/new" class="button ghost small topbar-add-lens">Add lens</a>
+        <a href="/lenses/new" class="button ghost small topbar-add-lens" data-online-only
+          >Add lens</a
+        >
         <a
           class="button ghost small theme-toggle topbar-settings"
           href="/settings"
@@ -188,6 +244,12 @@
         </button>
       </div>
     </header>
+    {#if connection.offline}
+      <p class="offline-banner" role="status">
+        Offline — showing the copy from {syncedLabel ?? 'this device'}. Changes are paused until the
+        server is reachable.
+      </p>
+    {/if}
     <nav class="main-nav" class:form-route={isFormRoute} aria-label="Main navigation">
       <a
         href="/"
@@ -201,7 +263,7 @@
         aria-current={pathname.startsWith('/lenses') ? 'page' : undefined}
         ><NavIcon name="collection" /><span>Collection</span></a
       >
-      <a class="nav-add" href="/lenses/new" aria-label="Add lens"
+      <a class="nav-add" href="/lenses/new" aria-label="Add lens" data-online-only
         ><span class="nav-add-disc"><NavIcon name="add" /></span><span>Add</span></a
       >
       <a

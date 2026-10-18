@@ -9,17 +9,9 @@
 
 import { lensEntrySchema, type LensEntryInput } from '$lib/domain';
 import { sqlite } from '$lib/server/db';
+import type { LensEntryView } from '$lib/catalogue-types';
 
-export type LensEntryView = {
-  id: number;
-  lensId: number;
-  type: 'note' | 'memory';
-  eventDate: string | null;
-  body: string;
-  createdAt: number;
-  updatedAt: number;
-  photoIds: number[];
-};
+export type { LensEntryView };
 
 type LensEntryRow = Omit<LensEntryView, 'photoIds'> & { photoIds: string | null };
 

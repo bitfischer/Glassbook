@@ -2850,3 +2850,16 @@ body {
     grid-template-columns: repeat(4, 5.75rem);
   }
 }
+
+/* Offline mirror: the catalogue is read-only while the server is unreachable. */
+.offline-banner {
+  margin: 0;
+  padding: 0.55rem max(1.25rem, calc((100% - 1240px) / 2));
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+html[data-offline] [data-online-only] {
+  display: none !important;
+}

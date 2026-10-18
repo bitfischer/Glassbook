@@ -14,6 +14,8 @@ export default {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({ out: 'build' }),
+    // The offline shell is served for nested URLs such as /lenses/1, so asset URLs must be absolute.
+    paths: { relative: false },
     csp: {
       mode: 'auto',
       directives: {

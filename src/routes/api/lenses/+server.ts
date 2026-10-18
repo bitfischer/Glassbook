@@ -7,10 +7,12 @@
  * @license MIT
  */
 
+import { apiJson } from '$lib/server/api';
 import { sqlite } from '$lib/server/db';
 import { catalogueFacets, listLenses } from '$lib/server/lenses';
+import type { CollectionSummary } from '$lib/catalogue-types';
 
-export const load = ({ url }) => {
+export const GET = ({ url }) => {
   const lenses = listLenses(url.searchParams);
   const summary = sqlite
     .prepare(
@@ -20,11 +22,6 @@ export const load = ({ url }) => {
         COALESCE(SUM(CASE WHEN ownership = 'owned' THEN purchase_price_minor ELSE 0 END), 0) AS valueMinor
        FROM lenses`
     )
-    .get() as { total: number; owned: number; manufacturers: number; valueMinor: number };
-  return {
-    lenses,
-    summary,
-    facets: catalogueFacets(),
-    query: Object.fromEntries(url.searchParams)
-  };
+    .get() as CollectionSummary;
+  return apiJson({ lenses, summary, facets: catalogueFacets() });
 };

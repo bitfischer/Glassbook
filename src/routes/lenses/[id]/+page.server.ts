@@ -17,7 +17,6 @@ import {
   createLensEntry,
   deleteLensEntry,
   detachLensEntryPhoto,
-  listLensEntries,
   parseLensEntryForm,
   updateLensEntry
 } from '$lib/server/lens-entries';
@@ -46,26 +45,6 @@ function entryId(value: FormDataEntryValue | null): number | null {
   const id = Number(value);
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
-
-export const load = ({ params }) => {
-  const id = lensId(params.id);
-  const lens = getLens(id);
-  if (!lens) throw error(404, 'Lens not found');
-  const photos = sqlite
-    .prepare(
-      `SELECT id, original_name AS originalName, width, height, position,
-        is_cover AS isCover FROM lens_photos WHERE lens_id = ? ORDER BY position, id`
-    )
-    .all(id) as {
-    id: number;
-    originalName: string;
-    width: number;
-    height: number;
-    position: number;
-    isCover: number;
-  }[];
-  return { lens, photos, entries: listLensEntries(id) };
-};
 
 export const actions = {
   upload: async ({ params, request }) => {

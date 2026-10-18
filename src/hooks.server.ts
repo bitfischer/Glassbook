@@ -14,6 +14,14 @@ import { isAuthenticationEnabled } from '$lib/server/auth-settings';
 
 let lastCleanup = 0;
 
+function secure(response: Response) {
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'same-origin');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
   if (Date.now() - lastCleanup > 3_600_000) {
     cleanupExpiredSessions();
@@ -30,7 +38,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const path = event.url.pathname;
   const publicPath =
-    path === '/setup' || path === '/login' || path === '/healthz' || path === '/readyz';
+    path === '/setup' ||
+    path === '/login' ||
+    path === '/healthz' ||
+    path === '/readyz' ||
+    path === '/shell';
+  // Scripts calling the API get a status they can act on instead of a redirect to an HTML page.
+  const isApi = path.startsWith('/api/');
+  if (isApi && authenticationEnabled && (!initialized || !session)) {
+    return secure(
+      new Response(JSON.stringify({ message: 'Sign in required' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' }
+      })
+    );
+  }
 
   if (!authenticationEnabled && (path === '/login' || path === '/setup')) throw redirect(303, '/');
   if (
@@ -38,7 +60,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     !initialized &&
     path !== '/setup' &&
     path !== '/healthz' &&
-    path !== '/readyz'
+    path !== '/readyz' &&
+    path !== '/shell'
   ) {
     throw redirect(303, '/setup');
   }
@@ -50,10 +73,5 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
   if (authenticationEnabled && path === '/login' && session) throw redirect(303, '/');
 
-  const response = await resolve(event);
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'same-origin');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  return response;
+  return secure(await resolve(event));
 };

@@ -7,4 +7,6 @@
  * @license MIT
  */
 
-export const load = ({ locals }) => ({ user: locals.user });
+import { apiJson } from '$lib/server/api';
+
+export const GET = ({ locals }) => apiJson({ user: locals.user });

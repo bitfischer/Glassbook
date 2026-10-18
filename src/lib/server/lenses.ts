@@ -9,38 +9,9 @@
 
 import { sqlite } from '$lib/server/db';
 import { lensSchema, priceToMinor, type LensInput } from '$lib/domain';
+import type { LensView } from '$lib/catalogue-types';
 
-export type LensView = {
-  id: number;
-  manufacturerId: number;
-  manufacturer: string;
-  mountId: number | null;
-  mount: string | null;
-  model: string;
-  serialNumber: string | null;
-  focalType: 'prime' | 'zoom';
-  focalMinMm: number | null;
-  focalMaxMm: number | null;
-  apertureMin: string | null;
-  apertureMax: string | null;
-  lengthMm: number | null;
-  diameterMm: number | null;
-  weightGrams: number | null;
-  filterThreadMm: number | null;
-  elements: number | null;
-  groups: number | null;
-  releaseYear: number | null;
-  purchaseDate: string | null;
-  purchasePriceMinor: number | null;
-  currency: string;
-  condition: string;
-  ownership: string;
-  notes: string | null;
-  createdAt: number;
-  updatedAt: number;
-  coverId: number | null;
-  photoIds: number[];
-};
+export type { LensView };
 
 type LensRow = Omit<LensView, 'photoIds'> & { photoIds: string | null };
 
