@@ -43,6 +43,9 @@ export function applyTheme(theme: Theme): void {
 
   document.documentElement.dataset.theme = theme;
   document.documentElement.style.colorScheme = theme;
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme === 'dark' ? '#0f1013' : '#ece9e0');
 
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);

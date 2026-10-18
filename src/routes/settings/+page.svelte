@@ -10,12 +10,16 @@
 <script lang="ts">
   let { data, form } = $props();
   let reportFields = $state(['lensName', 'vendor', 'serialNumber', 'purchasePrice']);
+  const catalogueOpen = $derived(
+    /added\.|Value deleted|already exists|used by a lens|valid (name|value)/.test(
+      form?.message ?? ''
+    )
+  );
 </script>
 
 <svelte:head><title>Settings · Glassbook</title></svelte:head>
 <div class="page-header">
   <div>
-    <p class="eyebrow">Administration</p>
     <h1>Settings</h1>
     <p class="muted">Manage your catalogue, access, and data.</p>
   </div>
@@ -34,17 +38,7 @@
   </p>{/if}
 
 <div class="settings-overview-grid">
-  <section class="card settings-panel settings-daily-lens">
-    <p class="eyebrow">Daily feature</p>
-    <h2>Lens of the day</h2>
-    <p class="muted">Choose a different lens now. The current lens remains in your history.</p>
-    <form method="POST" action="?/chooseAgain" class="settings-panel-action">
-      <button type="submit">Choose another lens</button>
-    </form>
-  </section>
-
-  <section class="card settings-panel">
-    <p class="eyebrow">Data protection</p>
+  <section class="card settings-panel settings-data">
     <h2>Backups</h2>
     <p class="muted">Keep an export of your catalogue, settings, and original photos.</p>
     <div class="settings-panel-action">
@@ -67,7 +61,7 @@
         }}
       >
         <div>
-          <p class="eyebrow">Destructive action</p>
+          <p class="eyebrow eyebrow-danger">Destructive action</p>
           <h2>Restore from backup</h2>
           <p class="muted">
             Upload a Glassbook .tar.gz backup. This replaces all catalogue data, settings, login
@@ -89,7 +83,6 @@
   </section>
 
   <section class="card settings-panel settings-insurance-report">
-    <p class="eyebrow">Documentation</p>
     <h2>Insurance report</h2>
     <p class="muted">Export every lens as a PDF with the details you want to include.</p>
     <form method="GET" action="/insurance-report" class="settings-report-form">
@@ -113,13 +106,20 @@
           <span>Purchase price</span>
         </label>
       </fieldset>
-      <button type="submit" disabled={!reportFields.length}>Export PDF</button>
+      <button class="ghost" type="submit" disabled={!reportFields.length}>Export PDF</button>
+    </form>
+  </section>
+
+  <section class="card settings-panel settings-daily-lens">
+    <h2>Lens of the day</h2>
+    <p class="muted">Choose a different lens now. The current lens remains in your history.</p>
+    <form method="POST" action="?/chooseAgain" class="settings-panel-action">
+      <button class="ghost" type="submit">Choose another lens</button>
     </form>
   </section>
 </div>
 
 <section class="card lens-form settings-authentication">
-  <p class="eyebrow">Security</p>
   <h2>User authentication</h2>
   <p class="muted">Require a username and password before opening Glassbook.</p>
   <form method="POST" action="?/authentication" class="stack settings-authentication-form">
@@ -164,16 +164,22 @@
         A username and password are required when you turn authentication on.
       {/if}
     </p>
-    <div class="form-actions"><button type="submit">Save authentication settings</button></div>
+    <div class="form-actions">
+      <button class="ghost" type="submit">Save authentication settings</button>
+    </div>
   </form>
 </section>
 
-<section class="settings-catalogue-values" aria-labelledby="catalogue-values-title">
-  <div class="settings-section-heading">
-    <p class="eyebrow">Catalogue setup</p>
-    <h2 id="catalogue-values-title">Manufacturers and mounts</h2>
-    <p class="muted">These reusable values keep lens forms tidy and consistent.</p>
-  </div>
+<details class="settings-catalogue-values" open={catalogueOpen}>
+  <summary>
+    <span>Manufacturers and mounts</span>
+    <span class="muted"
+      >{data.manufacturers.length} manufacturers · {data.mounts.length} mounts</span
+    >
+  </summary>
+  <p class="muted settings-catalogue-note">
+    These reusable values keep lens forms tidy and consistent.
+  </p>
   <div class="settings-value-grid">
     {#each [{ kind: 'manufacturer', title: 'Manufacturers', items: data.manufacturers }, { kind: 'mount', title: 'Mounts', items: data.mounts }] as group}
       <section class="card settings-value-panel">
@@ -181,11 +187,18 @@
         <form method="POST" action="?/add" class="settings-value-add">
           <input type="hidden" name="kind" value={group.kind} />
           <label>New {group.kind}<input name="name" required maxlength="100" /></label>
-          <button type="submit">Add</button>
+          <button class="ghost" type="submit">Add</button>
         </form>
         <div class="settings-value-list">
           {#each group.items as item}
-            <form method="POST" action="?/delete" class="settings-value-item">
+            <form
+              method="POST"
+              action="?/delete"
+              class="settings-value-item"
+              onsubmit={(event) => {
+                if (!confirm(`Delete ${item.name}?`)) event.preventDefault();
+              }}
+            >
               <input type="hidden" name="kind" value={group.kind} />
               <input type="hidden" name="id" value={item.id} />
               <span>{item.name}</span>
@@ -196,4 +209,4 @@
       </section>
     {/each}
   </div>
-</section>
+</details>

@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#080d16" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ece9e0" />
     <meta name="application-name" content="Glassbook" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -26,6 +26,11 @@
             document.documentElement.dataset.theme = theme;
             document.documentElement.style.colorScheme = theme;
           }
+          var dark = theme
+            ? theme === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? '#0f1013' : '#ece9e0');
         } catch (e) {}
       })();
     </script>

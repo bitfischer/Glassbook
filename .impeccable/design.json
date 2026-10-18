@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T21:44:20.394Z",
+  "title": "Design System: Glassbook",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Aperture Orange",
+        "canonical": "#dc5839",
+        "tonalRamp": [
+          "#0c0e12",
+          "#47231d",
+          "#833828",
+          "#be4d33",
+          "#e06b50",
+          "#e7927d",
+          "#eeb9aa",
+          "#f6e0d7"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Burnt Aperture",
+        "canonical": "#ba4329",
+        "tonalRamp": [
+          "#0c0e12",
+          "#3e1d19",
+          "#6f2c1f",
+          "#a13b26",
+          "#c25942",
+          "#d18573",
+          "#e1b1a4",
+          "#f0ddd5"
+        ]
+      },
+      "teal": {
+        "role": "secondary",
+        "displayName": "Optic Teal",
+        "canonical": "#1b6974",
+        "tonalRamp": [
+          "#0c0e12",
+          "#10282e",
+          "#15424a",
+          "#195c66",
+          "#367a83",
+          "#6c9da2",
+          "#a2c0c1",
+          "#d9e3e0"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f6f3eb",
+        "tonalRamp": [
+          "#0c0e12",
+          "#4f4f50",
+          "#92918e",
+          "#d5d2cc",
+          "#f6f4ec",
+          "#f7f5ee",
+          "#f8f6f0",
+          "#f9f7f2"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#fffdf8",
+        "tonalRamp": [
+          "#0c0e12",
+          "#515254",
+          "#979795",
+          "#dcdbd7",
+          "#fefcf7",
+          "#fdfbf6",
+          "#fcfaf5",
+          "#fbf9f4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Navy Ink",
+        "canonical": "#17263a",
+        "tonalRamp": [
+          "#0c0e12",
+          "#0f151d",
+          "#121c29",
+          "#152334",
+          "#333f50",
+          "#6a737d",
+          "#a1a6aa",
+          "#d8d9d7"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#425064",
+        "tonalRamp": [
+          "#0c0e12",
+          "#1b2129",
+          "#2b3441",
+          "#3a4758",
+          "#586475",
+          "#858d98",
+          "#b2b6bb",
+          "#dedfde"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Sage",
+        "canonical": "#596159",
+        "tonalRamp": [
+          "#0c0e12",
+          "#222626",
+          "#383d3b",
+          "#4e554f",
+          "#6d736c",
+          "#949891",
+          "#bbbdb7",
+          "#e2e1dc"
+        ]
+      },
+      "accent-fill": {
+        "role": "primary",
+        "displayName": "Aperture Fill",
+        "canonical": "#c24427",
+        "tonalRamp": [
+          "#0c0e12",
+          "#401d18",
+          "#742d1e",
+          "#a83c24",
+          "#c95a40",
+          "#d68671",
+          "#e4b1a3",
+          "#f2ddd4"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "Aperture Ink",
+        "canonical": "#b13d22",
+        "tonalRamp": [
+          "#0c0e12",
+          "#3b1b17",
+          "#6a291b",
+          "#993620",
+          "#ba543b",
+          "#cc816e",
+          "#ddafa1",
+          "#efdcd4"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Pencil Line",
+        "canonical": "#d8d3c8",
+        "tonalRamp": [
+          "#0c0e12",
+          "#464646",
+          "#817f7a",
+          "#bbb7ae",
+          "#dcd7cd",
+          "#e4e0d8",
+          "#ede9e2",
+          "#f5f2ed"
+        ]
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Brick Red",
+        "canonical": "#a93b35",
+        "tonalRamp": [
+          "#0c0e12",
+          "#391b1c",
+          "#662826",
+          "#933530",
+          "#b3524c",
+          "#c7807a",
+          "#daaea8",
+          "#eedcd7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles and the hero lens name, in the old-style serif."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings, panel titles, challenge rule."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Working text and form values."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Eyebrows, form labels, badges."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Lens metadata: focal length, aperture, mount."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 18px 45px rgb(23 38 58 / 7%)",
+        "purpose": "Cards and panels at rest."
+      },
+      {
+        "name": "card-lift",
+        "value": "0 22px 46px rgb(23 38 58 / 13%)",
+        "purpose": "Lens cards and rows on hover."
+      },
+      {
+        "name": "button-glow",
+        "value": "0 7px 16px rgb(186 67 41 / 12%)",
+        "purpose": "Primary buttons."
+      },
+      {
+        "name": "topbar",
+        "value": "0 12px 32px rgb(23 38 58 / 7%)",
+        "purpose": "Glass top bar."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ui-fast",
+        "value": "150ms ease",
+        "purpose": "Button and field state changes."
+      },
+      {
+        "name": "card-hover",
+        "value": "180ms ease",
+        "purpose": "Card lift and border change."
+      },
+      {
+        "name": "iris-ease",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Logo iris and gallery-style movement."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "lg",
+        "value": "1080px"
+      },
+      {
+        "name": "md",
+        "value": "760px"
+      },
+      {
+        "name": "sm",
+        "value": "520px"
+      },
+      {
+        "name": "xs",
+        "value": "400px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Save lens</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.05rem;border-radius:3px;font:800 .88rem/1 var(--font-body,system-ui);letter-spacing:.015em;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,transform 150ms ease;border:1px solid #c24427;background:#c24427;color:#fff;box-shadow:0 7px 16px rgb(186 67 41 / 12%)}.ds-btn-primary:hover{background:#a63a20;border-color:#a63a20;color:#fff;transform:translateY(-1px)}.ds-btn-primary:focus-visible{outline:3px solid rgb(220 88 57 / 35%);outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions: cancel, filter, sort.",
+      "html": "<button class=\"ds-btn-ghost\">Cancel</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.05rem;border-radius:3px;font:800 .88rem/1 var(--font-body,system-ui);letter-spacing:.015em;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,transform 150ms ease;border:1px solid #aaa69d;background:transparent;color:#425064}.ds-btn-ghost:hover{background:#17263a;border-color:#17263a;color:#fffdf8}.ds-btn-ghost:focus-visible{outline:3px solid rgb(220 88 57 / 35%);outline-offset:3px}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive actions such as delete or restore.",
+      "html": "<button class=\"ds-btn-danger\">Delete lens</button>",
+      "css": ".ds-btn-danger{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.05rem;border-radius:3px;font:800 .88rem/1 var(--font-body,system-ui);letter-spacing:.015em;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,transform 150ms ease;border:1px solid rgb(169 59 53 / 48%);background:transparent;color:#a93b35}.ds-btn-danger:hover{background:#a93b35;border-color:#a93b35;color:#fff}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form input with a teal focus ring.",
+      "html": "<label class=\"ds-label\">Model<input class=\"ds-input\" placeholder=\"Summicron 50mm f/2\"></label>",
+      "css": ".ds-label{display:grid;gap:.45rem;color:#425064;font:800 .78rem/1 system-ui;letter-spacing:.035em}.ds-input{min-height:46px;padding:.65rem .75rem;border:1px solid #c8c3b8;border-radius:2px;background:#fffefa;color:#17263a;font-size:.91rem;transition:border-color 140ms ease,box-shadow 140ms ease}.ds-input:hover{border-color:#97958f}.ds-input:focus{outline:0;border-color:#1b6974;box-shadow:0 0 0 3px rgb(27 105 116 / 12%)}"
+    },
+    {
+      "name": "Spec Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Uppercase teal tag for lens type and status.",
+      "html": "<span class=\"ds-badge\">Prime</span>",
+      "css": ".ds-badge{display:inline-flex;padding:.28rem .52rem;border:1px solid rgb(27 105 116 / 25%);border-radius:2px;background:rgb(27 105 116 / 8%);color:#1b6974;font:800 .67rem/1 system-ui;letter-spacing:.08em;text-transform:uppercase}"
+    },
+    {
+      "name": "Filter Count",
+      "kind": "chip",
+      "description": "Orange pill showing the number of active filters.",
+      "html": "<span class=\"ds-count\">3</span>",
+      "css": ".ds-count{display:inline-grid;min-width:1.4rem;height:1.4rem;padding:0 .35rem;place-items:center;border-radius:999px;background:#dc5839;color:#fffaf3;font:800 .72rem/1 system-ui;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Lens Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Catalogue card: photo stage, serif name, mono meta, badges. Lifts on hover.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-stage\"></div><div class=\"ds-body\"><h3>Summicron 50mm</h3><p class=\"ds-meta\">50mm / f2 / M mount</p><span class=\"ds-badge\">Prime</span></div></article>",
+      "css": ".ds-card{overflow:hidden;width:260px;border:1px solid #d8d3c8;border-radius:4px;background:#fffdf8;box-shadow:0 18px 45px rgb(23 38 58 / 7%);transition:border-color 180ms ease,box-shadow 180ms ease,transform 180ms ease}.ds-card:hover{border-color:#a9a49a;box-shadow:0 22px 46px rgb(23 38 58 / 13%);transform:translateY(-4px)}.ds-stage{aspect-ratio:4/3;border-bottom:1px solid #d8d3c8;background:radial-gradient(circle at 50% 48%,rgb(27 105 116 / 12%),transparent 35%),linear-gradient(145deg,#e9e6dc,#fffdf8)}.ds-body{padding:1rem}.ds-body h3{margin:0;font:600 1.35rem/1.08 'Iowan Old Style',Palatino,Georgia,serif;letter-spacing:-.025em;color:#17263a}.ds-meta{margin:.6rem 0;color:#6f776f;font:.74rem ui-monospace,monospace}.ds-badge{display:inline-flex;padding:.28rem .52rem;border:1px solid rgb(27 105 116 / 25%);border-radius:2px;background:rgb(27 105 116 / 8%);color:#1b6974;font:800 .67rem/1 system-ui;letter-spacing:.08em;text-transform:uppercase}"
+    },
+    {
+      "name": "Challenge Rule",
+      "kind": "custom",
+      "description": "Wheel result block with an orange left edge (known debt: side stripe).",
+      "html": "<div class=\"ds-rule\"><span class=\"ds-eyebrow\">Your assignment</span><strong>Shoot a reflection at 35mm</strong></div>",
+      "css": ".ds-rule{padding:1rem 1.1rem;border-left:4px solid #dc5839;background:color-mix(in srgb,#fffdf8 86%,#dc5839);color:#17263a}.ds-eyebrow{display:block;color:#dc5839;font:800 .7rem/1 system-ui;letter-spacing:.18em;text-transform:uppercase}.ds-rule strong{display:block;margin-top:.4rem;font:600 1.35rem 'Iowan Old Style',Palatino,Georgia,serif}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lens Notebook",
+    "overview": "Glassbook looks like a well-kept field notebook for glass. Warm paper stock carries navy ink, and a single orange accent stands in for the iris of an aperture. Serif names, sans explains, mono measures. Crisp and tactile: small corners, hairline borders, soft ambient shadows that lift on touch. It is not a generic SaaS dashboard and not a marketplace.",
+    "keyCharacteristics": [
+      "Warm paper neutrals with navy ink; one orange accent; teal as quiet secondary.",
+      "Serif display, sans body, mono metadata.",
+      "2-4px corners and hairline borders.",
+      "Ambient shadows that lift on hover; blurred glass top bar.",
+      "Light and dark themes both first-class."
+    ],
+    "rules": [
+      {
+        "name": "The One Aperture Rule",
+        "body": "Orange is the only accent and marks the one thing to act on or notice on a screen. Teal never competes with it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper and Ink Rule",
+        "body": "Never pure black or pure white as surfaces or text; neutrals stay warm and tinted toward the paper, with ink tinted toward navy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Voices Rule",
+        "body": "Serif names things, sans explains things, mono measures things. Do not swap roles.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lift On Touch Rule",
+        "body": "Raised elements rest quietly and rise only when hovered or focused.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Aperture Orange for the single primary action or notice on a screen.",
+      "Do set lens names and headings in the serif, labels in the sans and measurements in mono.",
+      "Do keep corners to 2-4px and borders to hairlines; use shadow for response, not decoration.",
+      "Do keep both light and dark themes equally finished.",
+      "Do use only system fonts and local assets.",
+      "Do keep primary controls at least 44px tall and honor prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't make it a generic SaaS dashboard.",
+      "Don't make it a marketplace.",
+      "Don't use pure black or pure white as a background or text color.",
+      "Don't add a second accent color that competes with the orange.",
+      "Don't add thick colored side or top stripes to cards for emphasis.",
+      "Don't load web fonts, CDNs or other external assets."
+    ]
+  }
+}

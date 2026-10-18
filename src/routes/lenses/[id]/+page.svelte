@@ -34,6 +34,35 @@
           currency: data.lens.currency
         })
   );
+  const specGroups = $derived([
+    {
+      title: 'Optical',
+      rows: [
+        ['Focal length', focal],
+        ['Aperture', data.lens.apertureMin ? `ƒ/${data.lens.apertureMin}` : '—'],
+        ['Optical formula', opticalFormula],
+        ['Mount', display(data.lens.mount)]
+      ]
+    },
+    {
+      title: 'Physical',
+      rows: [
+        ['Weight', display(data.lens.weightGrams, ' g')],
+        ['Length', display(data.lens.lengthMm, ' mm')],
+        ['Diameter', display(data.lens.diameterMm, ' mm')],
+        ['Filter thread', display(data.lens.filterThreadMm, ' mm')]
+      ]
+    },
+    {
+      title: 'Provenance',
+      rows: [
+        ['Release year', display(data.lens.releaseYear)],
+        ['Serial number', display(data.lens.serialNumber)],
+        ['Condition', display(data.lens.condition)],
+        ['Purchase price', purchase]
+      ]
+    }
+  ] satisfies { title: string; rows: [string, string][] }[]);
   const lensNotes = $derived(data.entries.filter((entry) => entry.type === 'note'));
   const memories = $derived(data.entries.filter((entry) => entry.type === 'memory'));
   let newEntryType = $state('note');
@@ -54,14 +83,14 @@
 <div class="page-header">
   <div>
     <p class="eyebrow">{data.lens.manufacturer}</p>
-    <h1>{data.lens.model}</h1>
+    <h1>{data.lens.model.replace(/(\d)-(?=\d)/g, '$1\u2011')}</h1>
     <span class="badge">{data.lens.ownership}</span>
   </div>
   <div class="form-actions">
     <form method="POST" action="?/duplicate">
       <button class="ghost" type="submit">Duplicate</button>
     </form>
-    <a class="button" href={`/lenses/${data.lens.id}/edit`}>Edit lens</a>
+    <a class="button quiet-on-phone" href={`/lenses/${data.lens.id}/edit`}>Edit lens</a>
   </div>
 </div>
 
@@ -121,94 +150,39 @@
           <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
         </label>
         {#if form?.uploadError}<p class="field-error" role="alert">{form.uploadError}</p>{/if}
-        <button type="submit">Upload photo</button>
+        <button class="ghost" type="submit">Upload photo</button>
       </form>
     </details>
   </section>
 
   <section>
-    <h2>Specifications</h2>
-
-    <div class="spec-group">
-      <p class="spec-group-title">Optical</p>
-      <dl class="spec-list">
-        <div>
-          <dt>Focal length</dt>
-          <dd>{focal}</dd>
-        </div>
-        <div>
-          <dt>Aperture</dt>
-          <dd>{data.lens.apertureMin ? `ƒ/${data.lens.apertureMin}` : '—'}</dd>
-        </div>
-        <div>
-          <dt>Optical formula</dt>
-          <dd>{opticalFormula}</dd>
-        </div>
-        <div>
-          <dt>Mount</dt>
-          <dd>{display(data.lens.mount)}</dd>
-        </div>
-      </dl>
-    </div>
-
-    <div class="spec-group">
-      <p class="spec-group-title">Physical</p>
-      <dl class="spec-list">
-        <div>
-          <dt>Weight</dt>
-          <dd>{display(data.lens.weightGrams, ' g')}</dd>
-        </div>
-        <div>
-          <dt>Length</dt>
-          <dd>{display(data.lens.lengthMm, ' mm')}</dd>
-        </div>
-        <div>
-          <dt>Diameter</dt>
-          <dd>{display(data.lens.diameterMm, ' mm')}</dd>
-        </div>
-        <div>
-          <dt>Filter thread</dt>
-          <dd>{display(data.lens.filterThreadMm, ' mm')}</dd>
-        </div>
-      </dl>
-    </div>
-
-    <div class="spec-group">
-      <p class="spec-group-title">Provenance</p>
-      <dl class="spec-list">
-        <div>
-          <dt>Release year</dt>
-          <dd>{display(data.lens.releaseYear)}</dd>
-        </div>
-        <div>
-          <dt>Serial number</dt>
-          <dd>{display(data.lens.serialNumber)}</dd>
-        </div>
-        <div>
-          <dt>Condition</dt>
-          <dd>{data.lens.condition}</dd>
-        </div>
-        <div>
-          <dt>Purchase price</dt>
-          <dd>{purchase}</dd>
-        </div>
-      </dl>
-    </div>
-
     {#if data.lens.notes}<h2>Notes</h2>
       <p>{data.lens.notes}</p>{/if}
 
-    <div class="delete-row">
-      <form
-        method="POST"
-        action="?/delete"
-        onsubmit={(event) => {
-          if (!confirm('Delete this lens and all its photos?')) event.preventDefault();
-        }}
-      >
-        <button class="danger" type="submit">Delete lens</button>
-      </form>
-    </div>
+    <h2>Specifications</h2>
+
+    {#each specGroups as group}
+      {@const filled = group.rows.filter(([, value]) => value !== '—')}
+      {@const missing = group.rows.filter(([, value]) => value === '—')}
+      <div class="spec-group">
+        <p class="spec-group-title">{group.title}</p>
+        {#if filled.length}
+          <dl class="spec-list">
+            {#each filled as [label, value]}
+              <div>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            {/each}
+          </dl>
+        {/if}
+        {#if missing.length}
+          <p class="spec-missing">
+            Not recorded: {missing.map(([label]) => label.toLowerCase()).join(', ')}
+          </p>
+        {/if}
+      </div>
+    {/each}
   </section>
 </div>
 
@@ -220,123 +194,9 @@
     </div>
   </div>
 
-  <form method="POST" action="?/createEntry" enctype="multipart/form-data" class="entry-form card">
-    <div class="entry-form-row">
-      <label>
-        Entry type
-        <select name="type" bind:value={newEntryType}>
-          <option value="note">Lens note</option>
-          <option value="memory">Memory</option>
-        </select>
-      </label>
-      {#if newEntryType === 'memory'}
-        <label>
-          Date (optional)
-          <input
-            name="eventDate"
-            type="date"
-            value={form?.entryAction === 'create' ? (form.entryValues?.eventDate ?? '') : ''}
-          />
-          {#if entryError('eventDate')}<span class="field-error">{entryError('eventDate')}</span
-            >{/if}
-        </label>
-      {/if}
-    </div>
-    <label>
-      {newEntryType === 'memory' ? 'What happened?' : 'What should you remember about this lens?'}
-      <textarea name="body" required
-        >{form?.entryAction === 'create' ? (form.entryValues?.body ?? '') : ''}</textarea
-      >
-      {#if form?.entryAction === 'create' && entryError('body')}<span class="field-error"
-          >{entryError('body')}</span
-        >{/if}
-    </label>
-    {#if newEntryType === 'memory'}
-      <label>
-        Images (optional)
-        <input name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple />
-        <span class="field-hint">Uploaded images are also added to this lens's photo gallery.</span>
-      </label>
-    {/if}
-    <button type="submit">Add {newEntryType === 'memory' ? 'memory' : 'lens note'}</button>
-  </form>
-
   {#if form?.entryMessage}<p class="error-banner" role="alert">{form.entryMessage}</p>{/if}
 
   <div class="journal-columns">
-    <section aria-labelledby="lens-notes-heading">
-      <h3 id="lens-notes-heading">Lens notes</h3>
-      {#if lensNotes.length}
-        <div class="entry-list">
-          {#each lensNotes as entry (entry.id)}
-            <article class="journal-entry card">
-              <p class="entry-body">{entry.body}</p>
-              <details open={form?.entryAction === 'update' && form.entryId === entry.id}>
-                <summary>Edit</summary>
-                <form method="POST" action="?/updateEntry" class="stack entry-edit-form">
-                  <input type="hidden" name="entryId" value={entry.id} />
-                  <label>
-                    Entry type
-                    <select name="type">
-                      <option
-                        value="note"
-                        selected={form?.entryAction === 'update' && form.entryId === entry.id
-                          ? form.entryValues?.type === 'note'
-                          : true}>Lens note</option
-                      >
-                      <option
-                        value="memory"
-                        selected={form?.entryAction === 'update' &&
-                          form.entryId === entry.id &&
-                          form.entryValues?.type === 'memory'}>Memory</option
-                      >
-                    </select>
-                  </label>
-                  <label>
-                    Date (only for memories)
-                    <input
-                      name="eventDate"
-                      type="date"
-                      value={form?.entryAction === 'update' && form.entryId === entry.id
-                        ? (form.entryValues?.eventDate ?? '')
-                        : ''}
-                    />
-                  </label>
-                  <label>
-                    Entry text
-                    <textarea name="body" required
-                      >{form?.entryAction === 'update' && form.entryId === entry.id
-                        ? (form.entryValues?.body ?? entry.body)
-                        : entry.body}</textarea
-                    >
-                    {#if form?.entryAction === 'update' && form.entryId === entry.id && entryError('body')}<span
-                        class="field-error">{entryError('body')}</span
-                      >{/if}
-                  </label>
-                  <div class="entry-actions">
-                    <button class="small" type="submit">Save</button>
-                  </div>
-                </form>
-              </details>
-              <form
-                method="POST"
-                action="?/deleteEntry"
-                class="entry-delete"
-                onsubmit={(event) => {
-                  if (!confirm('Delete this lens note?')) event.preventDefault();
-                }}
-              >
-                <input type="hidden" name="entryId" value={entry.id} />
-                <button class="danger small" type="submit">Delete</button>
-              </form>
-            </article>
-          {/each}
-        </div>
-      {:else}
-        <p class="empty-copy">No lens notes yet.</p>
-      {/if}
-    </section>
-
     <section aria-labelledby="memories-heading">
       <h3 id="memories-heading">Memories</h3>
       {#if memories.length}
@@ -409,7 +269,7 @@
                       >{/if}
                   </label>
                   <div class="entry-actions">
-                    <button class="small" type="submit">Save</button>
+                    <button class="ghost small" type="submit">Save</button>
                   </div>
                 </form>
               </details>
@@ -438,7 +298,7 @@
                       >Images are stored in this lens's existing gallery.</span
                     >
                   </label>
-                  <button class="small" type="submit">Upload and attach</button>
+                  <button class="ghost small" type="submit">Upload and attach</button>
                 </form>
               </details>
               <form
@@ -459,5 +319,150 @@
         <p class="empty-copy">No memories yet.</p>
       {/if}
     </section>
+
+    <section aria-labelledby="lens-notes-heading">
+      <h3 id="lens-notes-heading">Lens notes</h3>
+      {#if lensNotes.length}
+        <div class="entry-list">
+          {#each lensNotes as entry (entry.id)}
+            <article class="journal-entry card">
+              <p class="entry-body">{entry.body}</p>
+              <details open={form?.entryAction === 'update' && form.entryId === entry.id}>
+                <summary>Edit</summary>
+                <form method="POST" action="?/updateEntry" class="stack entry-edit-form">
+                  <input type="hidden" name="entryId" value={entry.id} />
+                  <label>
+                    Entry type
+                    <select name="type">
+                      <option
+                        value="note"
+                        selected={form?.entryAction === 'update' && form.entryId === entry.id
+                          ? form.entryValues?.type === 'note'
+                          : true}>Lens note</option
+                      >
+                      <option
+                        value="memory"
+                        selected={form?.entryAction === 'update' &&
+                          form.entryId === entry.id &&
+                          form.entryValues?.type === 'memory'}>Memory</option
+                      >
+                    </select>
+                  </label>
+                  <label>
+                    Date (only for memories)
+                    <input
+                      name="eventDate"
+                      type="date"
+                      value={form?.entryAction === 'update' && form.entryId === entry.id
+                        ? (form.entryValues?.eventDate ?? '')
+                        : ''}
+                    />
+                  </label>
+                  <label>
+                    Entry text
+                    <textarea name="body" required
+                      >{form?.entryAction === 'update' && form.entryId === entry.id
+                        ? (form.entryValues?.body ?? entry.body)
+                        : entry.body}</textarea
+                    >
+                    {#if form?.entryAction === 'update' && form.entryId === entry.id && entryError('body')}<span
+                        class="field-error">{entryError('body')}</span
+                      >{/if}
+                  </label>
+                  <div class="entry-actions">
+                    <button class="ghost small" type="submit">Save</button>
+                  </div>
+                </form>
+              </details>
+              <form
+                method="POST"
+                action="?/deleteEntry"
+                class="entry-delete"
+                onsubmit={(event) => {
+                  if (!confirm('Delete this lens note?')) event.preventDefault();
+                }}
+              >
+                <input type="hidden" name="entryId" value={entry.id} />
+                <button class="danger small" type="submit">Delete</button>
+              </form>
+            </article>
+          {/each}
+        </div>
+      {:else}
+        <p class="empty-copy">No lens notes yet.</p>
+      {/if}
+    </section>
   </div>
+
+  <details
+    class="entry-add"
+    open={!data.entries.length ||
+      (form?.entryAction === 'create' &&
+        Boolean(form.entryMessage || entryError('body') || entryError('eventDate')))}
+  >
+    <summary class="button ghost">Add a memory or note</summary>
+    <form
+      method="POST"
+      action="?/createEntry"
+      enctype="multipart/form-data"
+      class="entry-form card"
+    >
+      <div class="entry-form-row">
+        <label>
+          Entry type
+          <select name="type" bind:value={newEntryType}>
+            <option value="note">Lens note</option>
+            <option value="memory">Memory</option>
+          </select>
+        </label>
+        {#if newEntryType === 'memory'}
+          <label>
+            Date (optional)
+            <input
+              name="eventDate"
+              type="date"
+              value={form?.entryAction === 'create' ? (form.entryValues?.eventDate ?? '') : ''}
+            />
+            {#if entryError('eventDate')}<span class="field-error">{entryError('eventDate')}</span
+              >{/if}
+          </label>
+        {/if}
+      </div>
+      <label>
+        {newEntryType === 'memory' ? 'What happened?' : 'What should you remember about this lens?'}
+        <textarea name="body" required
+          >{form?.entryAction === 'create' ? (form.entryValues?.body ?? '') : ''}</textarea
+        >
+        {#if form?.entryAction === 'create' && entryError('body')}<span class="field-error"
+            >{entryError('body')}</span
+          >{/if}
+      </label>
+      {#if newEntryType === 'memory'}
+        <label>
+          Images (optional)
+          <input name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+          <span class="field-hint"
+            >Uploaded images are also added to this lens's photo gallery.</span
+          >
+        </label>
+      {/if}
+      <button class="ghost" type="submit"
+        >Add {newEntryType === 'memory' ? 'memory' : 'lens note'}</button
+      >
+    </form>
+  </details>
 </section>
+
+<details class="danger-zone">
+  <summary>Delete this lens</summary>
+  <p class="muted">This removes the lens, its photos and its journal. It cannot be undone.</p>
+  <form
+    method="POST"
+    action="?/delete"
+    onsubmit={(event) => {
+      if (!confirm('Delete this lens and all its photos?')) event.preventDefault();
+    }}
+  >
+    <button class="danger" type="submit">Delete lens</button>
+  </form>
+</details>

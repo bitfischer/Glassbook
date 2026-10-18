@@ -16,7 +16,7 @@
 <div class="page-header">
   <div>
     <p class="eyebrow">{data.lens.manufacturer}</p>
-    <h1>Edit {data.lens.model}</h1>
+    <h1 class="form-title">Edit {data.lens.model}</h1>
   </div>
 </div>
 <LensForm

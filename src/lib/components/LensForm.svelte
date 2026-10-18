@@ -37,6 +37,7 @@
     value.focalMaxMm !== value.focalMinMm
       ? 'zoom'
       : 'prime';
+  const startOpen = $derived(Boolean(value.id) || Boolean(form?.errors));
   let focalType = $state(String(field('focalType', inferredFocalType())));
 </script>
 
@@ -63,10 +64,6 @@
       <datalist id="mounts">
         {#each mounts as item}<option value={item.name}></option>{/each}
       </datalist>
-    </label>
-    <label>
-      Serial number
-      <input name="serialNumber" value={field('serialNumber')} />
     </label>
     <label>
       Release year
@@ -130,12 +127,16 @@
     {/if}
     <label>
       Maximum aperture
-      <input name="apertureMin" placeholder="1.4" value={field('apertureMin')} />
+      <input name="apertureMin" placeholder="e.g. 1.4" value={field('apertureMin')} />
     </label>
     <label>
       Minimum aperture
-      <input name="apertureMax" placeholder="16" value={field('apertureMax')} />
+      <input name="apertureMax" placeholder="e.g. 16" value={field('apertureMax')} />
     </label>
+  </section>
+
+  <details class="form-section form-more" open={startOpen}>
+    <summary>Physical details</summary>
     <label>
       Elements
       <input name="elements" type="number" min="0" value={field('elements')} />
@@ -144,10 +145,6 @@
       Groups
       <input name="groups" type="number" min="0" value={field('groups')} />
     </label>
-  </section>
-
-  <section class="form-section">
-    <h2>Physical details</h2>
     <label>
       Weight (g)
       <input name="weightGrams" type="number" min="0" value={field('weightGrams')} />
@@ -164,10 +161,14 @@
       Filter thread (mm)
       <input name="filterThreadMm" type="number" min="0" value={field('filterThreadMm')} />
     </label>
-  </section>
+  </details>
 
-  <section class="form-section">
-    <h2>Ownership</h2>
+  <details class="form-section form-more" open={startOpen}>
+    <summary>Ownership and purchase</summary>
+    <label>
+      Serial number
+      <input name="serialNumber" value={field('serialNumber')} />
+    </label>
     <label>
       Status
       <select name="ownership">
@@ -204,7 +205,7 @@
       <input name="currency" maxlength="3" required value={field('currency', 'EUR')} />
       {#if error('currency')}<span class="field-error">{error('currency')}</span>{/if}
     </label>
-  </section>
+  </details>
 
   <div class="form-actions">
     <button type="submit">{submitLabel}</button>

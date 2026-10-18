@@ -16,7 +16,7 @@
 <div class="page-header">
   <div>
     <p class="eyebrow">Collection</p>
-    <h1>Add a lens</h1>
+    <h1 class="form-title">Add a lens</h1>
   </div>
 </div>
 <LensForm

@@ -16,7 +16,7 @@
 
   let filtersOpen = $state(false);
   let searchOpen = $state(false);
-  let quickSearch = $state('');
+  let quickSearch = $derived(data.query.q ?? '');
   let quickSearchInput = $state<HTMLInputElement>();
   let searchTimer: ReturnType<typeof setTimeout>;
   const currentView = $derived(data.query.view === 'list' ? 'list' : 'grid');
@@ -29,8 +29,25 @@
       data.query.ownership,
       data.query.focalType,
       data.query.focal,
-      data.query.era
+      data.query.era,
+      data.query.photo
     ].filter(Boolean).length
+  );
+  const filterChips = $derived(
+    (
+      [
+        ['q', data.query.q ? `Search: ${data.query.q}` : ''],
+        ['manufacturer', data.query.manufacturer ?? ''],
+        ['ownership', data.query.ownership ? `Ownership: ${data.query.ownership}` : ''],
+        [
+          'focalType',
+          data.query.focalType === 'zoom' ? 'Zoom' : data.query.focalType ? 'Prime' : ''
+        ],
+        ['focal', data.query.focal ? `${data.query.focal} mm` : ''],
+        ['era', data.query.era === 'vintage' ? 'Vintage' : data.query.era ? 'Modern' : ''],
+        ['photo', data.query.photo === 'none' ? 'No photo' : data.query.photo ? 'With photo' : '']
+      ] as [string, string][]
+    ).filter(([, label]) => label)
   );
   const queryHref = (updates: Record<string, string>) => {
     // Local, non-reactive throwaway used only to serialise the query string.
@@ -57,7 +74,6 @@
       return;
     }
 
-    quickSearch = data.query.q ?? '';
     searchOpen = true;
     await tick();
     quickSearchInput?.focus();
@@ -102,9 +118,9 @@
 
 <svelte:head><title>Collection · Glassbook</title></svelte:head>
 
+<h1 class="sr-only">Collection</h1>
 <div class="filter-panel">
-  <div class="collection-actions">
-    <a href="/lenses/new" class="button">Add lens</a>
+  <div class="collection-actions" data-swipe-navigation-exempt>
     <button
       class="search-toggle ghost"
       type="button"
@@ -118,13 +134,13 @@
       </svg>
       <span class="search-label">Search</span>
     </button>
-    {#if searchOpen}
+    <div class="quick-search-wrap" class:open={searchOpen}>
       <input
         id="quick-search"
         class="quick-search"
         type="search"
         aria-label="Search by manufacturer or model"
-        placeholder="Manufacturer or model"
+        placeholder="Search manufacturer or model"
         value={quickSearch}
         bind:this={quickSearchInput}
         oninput={scheduleSearch}
@@ -135,7 +151,7 @@
           }
         }}
       />
-    {/if}
+    </div>
     <button
       class="filter-toggle ghost"
       type="button"
@@ -176,6 +192,17 @@
       </span>
     </a>
   </div>
+  {#if filterChips.length}
+    <ul class="filter-chips" aria-label="Active filters">
+      {#each filterChips as [key, label]}
+        <li>
+          <a href={queryHref({ [key]: '' })} aria-label={`Remove filter ${label}`}>
+            {label}<span aria-hidden="true">×</span>
+          </a>
+        </li>
+      {/each}
+    </ul>
+  {/if}
   {#if filtersOpen}
     <form id="collection-filters" class="filters card" method="GET" aria-label="Collection filters">
       <input type="hidden" name="view" value={currentView} />
@@ -218,20 +245,28 @@
         </select>
       </label>
       <label>
+        <span class="muted">Photos</span>
+        <select name="photo">
+          <option value="">All</option>
+          <option value="has" selected={data.query.photo === 'has'}>With photo</option>
+          <option value="none" selected={data.query.photo === 'none'}>No photo yet</option>
+        </select>
+      </label>
+      <label>
         <span class="muted">Focal length</span>
         <input
           name="focal"
           type="number"
           min="0.1"
           step="0.1"
-          placeholder="50"
+          placeholder="e.g. 50"
           value={data.query.focal ?? ''}
         />
       </label>
       <label>
-        <span class="muted">Sort</span>
+        <span class="muted">Sort by</span>
         <select name="sort">
-          <option value="added" selected={data.query.sort === 'added'}>Recently added</option>
+          <option value="added" selected={data.query.sort === 'added'}>Date added</option>
           <option value="name" selected={data.query.sort === 'name'}>Name</option>
           <option value="era" selected={data.query.sort === 'era'}>Vintage vs Modern</option>
           <option value="year" selected={data.query.sort === 'year'}>Release year</option>
@@ -250,7 +285,7 @@
       ><strong>{data.lenses.length}</strong>
       {data.lenses.length === 1 ? 'lens' : 'lenses'} shown</span
     >
-    <span>{data.summary.total} in archive</span>
+    {#if data.lenses.length !== data.summary.total}<span>{data.summary.total} in archive</span>{/if}
   </div>
   {#if currentView === 'grid'}
     <section class="lens-grid" aria-label="Lenses">
@@ -260,7 +295,12 @@
             {#if lens.photoIds.length}
               <LensCardPhotos photoIds={lens.photoIds} />
             {:else}
-              <span class="lens-placeholder aperture-mark" aria-hidden="true"></span>
+              <span class="lens-plate" aria-hidden="true">
+                <span class="lens-plate-focal">{focal(lens) || lens.manufacturer}</span>
+                {#if lens.apertureMin}<span class="lens-plate-aperture">ƒ/{lens.apertureMin}</span
+                  >{/if}
+                <span class="lens-plate-note">No photo yet</span>
+              </span>
             {/if}
           </div>
           <div class="lens-content">
@@ -287,7 +327,7 @@
             {#if lens.coverId}
               <img src={`/images/${lens.coverId}/thumbnail`} alt="" loading="lazy" />
             {:else}
-              <span class="lens-placeholder lens-placeholder-small" aria-hidden="true">◉</span>
+              <span class="lens-placeholder aperture-mark" aria-hidden="true"></span>
             {/if}
           </div>
           <div class="lens-row-main">
@@ -304,7 +344,7 @@
             </div>
           </div>
           <div class="lens-row-side">
-            <span>{lens.releaseYear ?? '—'}</span>
+            {#if lens.releaseYear}<span>{lens.releaseYear}</span>{/if}
           </div>
         </a>
       {/each}

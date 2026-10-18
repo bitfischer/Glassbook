@@ -19,6 +19,12 @@
   const carouselCount = $derived(lens ? Math.max(lens.photoIds.length, 1) : 0);
   const animationPaused = $derived(manualPaused);
 
+  const sinceLabel = $derived.by(() => {
+    if (!lens) return '';
+    if (lens.purchaseDate) return `In the collection since ${lens.purchaseDate.slice(0, 4)}`;
+    return `Added ${new Date(lens.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}`;
+  });
+
   function focal(lens: NonNullable<typeof data.lensOfTheDay>) {
     if (!lens.focalMinMm) return null;
     return lens.focalMaxMm && lens.focalMaxMm !== lens.focalMinMm
@@ -58,100 +64,102 @@
 
 <svelte:head><title>Home · Glassbook</title></svelte:head>
 
-<section class="home-hero">
-  <div>
-    <p class="eyebrow">Your lens archive</p>
-    <h1>Keep the glass<br class="home-hero-break" /> close at hand.</h1>
-    <p class="home-intro">A quiet, private place for the lenses you own, use, and remember.</p>
-  </div>
-  <div class="home-hero-mark aperture-mark" aria-hidden="true"></div>
-</section>
-
-<section class="home-section" aria-labelledby="lenses-of-the-day">
-  <div class="home-section-heading">
-    <div>
-      <p class="eyebrow">A fresh view, every visit</p>
-      <h2 id="lenses-of-the-day">Lens of the day</h2>
-    </div>
-  </div>
+<section class="home-feature" aria-labelledby="lens-of-the-day">
+  <h1 id="lens-of-the-day">Lens of the day</h1>
+  {#if lens}<p class="home-context">{sinceLabel}</p>{/if}
 
   {#if lens}
-    <div
-      class="home-carousel"
-      role="region"
-      aria-label="Lens of the day photos"
-      class:is-paused={animationPaused}
-    >
-      <div class="home-carousel-track">
-        {#each lens.photoIds.length ? lens.photoIds : [null] as photoId, index}
-          <a
-            class="home-lens-card card"
-            class:active={index === active}
-            href={'/lenses/' + lens.id}
-          >
-            <div class="home-lens-cover">
+    <article class="home-feature-card card">
+      <div
+        class="home-stage"
+        data-swipe-navigation-exempt
+        role="region"
+        aria-label="Lens of the day photos"
+        class:is-paused={animationPaused}
+      >
+        <div class="home-slides">
+          {#each lens.photoIds.length ? lens.photoIds : [null] as photoId, index}
+            <a
+              class="home-slide"
+              class:active={index === active}
+              href={'/lenses/' + lens.id}
+              aria-label={photoId ? undefined : `${lens.manufacturer} ${lens.model}`}
+              tabindex={index === active ? undefined : -1}
+              aria-hidden={index === active ? undefined : 'true'}
+            >
               {#if photoId}
                 <img
-                  class="home-carousel-image"
                   src={'/images/' + photoId + '/gallery'}
                   alt={lens.manufacturer + ' ' + lens.model}
-                  loading="lazy"
+                  loading={index === 0 ? 'eager' : 'lazy'}
                 />
               {:else}
                 <span class="lens-placeholder aperture-mark" aria-hidden="true"></span>
               {/if}
-            </div>
-            <div class="home-lens-content">
-              <span class="eyebrow">{lens.manufacturer}</span>
-              <h3>{lens.model}</h3>
-              <div class="meta">
-                {#if focal(lens)}<span>{focal(lens)}</span>{/if}
-                {#if lens.apertureMin}<span>ƒ/{lens.apertureMin}</span>{/if}
-                {#if lens.mount}<span>{lens.mount}</span>{/if}
-              </div>
-            </div>
-          </a>
-        {/each}
-      </div>
-      {#if carouselCount > 1}
-        <div class="home-carousel-progress" aria-hidden="true">
-          {#key progressKey}<span class:is-paused={animationPaused}></span>{/key}
-        </div>
-        <button
-          class="home-carousel-pause"
-          type="button"
-          aria-pressed={manualPaused}
-          aria-label={manualPaused ? 'Resume carousel animation' : 'Pause carousel animation'}
-          onclick={togglePause}>{manualPaused ? 'Resume' : 'Pause'}</button
-        >
-        <button
-          class="home-carousel-control previous"
-          type="button"
-          onclick={() => goTo(active - 1)}
-          aria-label="Previous photo">‹</button
-        >
-        <button
-          class="home-carousel-control next"
-          type="button"
-          onclick={() => goTo(active + 1)}
-          aria-label="Next photo">›</button
-        >
-        <div class="home-carousel-dots" aria-label="Choose photo">
-          {#each lens.photoIds.length ? lens.photoIds : [null], index}
-            <button
-              class:active={index === active}
-              type="button"
-              aria-label={'Show photo ' + (index + 1)}
-              aria-current={index === active ? 'true' : undefined}
-              onclick={() => goTo(index)}
-            ></button>
+            </a>
           {/each}
         </div>
-      {/if}
-    </div>
+        {#if carouselCount > 1}
+          <div class="home-progress" aria-hidden="true">
+            {#key progressKey}<span class:is-paused={animationPaused}></span>{/key}
+          </div>
+          <button
+            class="home-arrow previous"
+            type="button"
+            onclick={() => goTo(active - 1)}
+            aria-label="Previous photo">‹</button
+          >
+          <button
+            class="home-arrow next"
+            type="button"
+            onclick={() => goTo(active + 1)}
+            aria-label="Next photo">›</button
+          >
+          <div class="home-dots" role="group" aria-label="Choose photo">
+            {#each lens.photoIds, index}
+              <button
+                class:active={index === active}
+                type="button"
+                aria-label={'Show photo ' + (index + 1)}
+                aria-current={index === active ? 'true' : undefined}
+                onclick={() => goTo(index)}
+              ></button>
+            {/each}
+            <button
+              class="home-pause"
+              type="button"
+              aria-pressed={manualPaused}
+              aria-label={manualPaused ? 'Resume carousel animation' : 'Pause carousel animation'}
+              onclick={togglePause}>{manualPaused ? 'Resume' : 'Pause'}</button
+            >
+          </div>
+        {/if}
+      </div>
+      <div class="home-body">
+        <p class="eyebrow">{lens.manufacturer}</p>
+        <h2>{lens.model}</h2>
+        <div class="meta">
+          {#if focal(lens)}<span>{focal(lens)}</span>{/if}
+          {#if lens.apertureMin}<span>ƒ/{lens.apertureMin}</span>{/if}
+          {#if lens.mount}<span>{lens.mount}</span>{/if}
+        </div>
+        {#if data.story}
+          <figure class="home-story">
+            <blockquote>{data.story.text}</blockquote>
+            {#if data.story.date}<figcaption>{data.story.date}</figcaption>{/if}
+          </figure>
+        {:else}
+          <p class="home-prompt">
+            Nothing written about this lens yet.
+            <a href={'/lenses/' + lens.id + '#journal-heading'}>Add a memory</a>
+          </p>
+        {/if}
+        <a class="button quiet-on-phone" href={'/lenses/' + lens.id}>Open lens</a>
+      </div>
+    </article>
   {:else}
     <div class="empty card">
-      <h3>Your archive is waiting.</h3>
+      <h2>Your archive is waiting.</h2>
       <p class="muted">Add your first lens to start the collection.</p>
       <a class="button" href="/lenses/new">Add a lens</a>
     </div>

@@ -27,6 +27,8 @@
 <div
   class="lens-card-gallery"
   role="group"
+  tabindex="-1"
+  data-swipe-navigation-exempt
   aria-label={`${photoIds.length} lens photos`}
   onscroll={updateActive}
   onwheel={forwardVerticalWheel}

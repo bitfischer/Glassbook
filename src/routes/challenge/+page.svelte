@@ -87,14 +87,17 @@
     <section class="wheel-panel card" aria-labelledby="wheel-title">
       <p class="eyebrow">{daily ? 'Challenge of the day' : 'Free spin'}</p>
       <h2 id="wheel-title">Spin the idea wheel</h2>
-      <div class="wheel-wrap">
+      <div class="wheel-wrap" data-swipe-navigation-exempt>
         <span class="wheel-pointer" aria-hidden="true"></span>
         <div class="challenge-wheel" class:spinning style={`--turns:${turns}`} aria-hidden="true">
           <div class="wheel-center">GB</div>
         </div>
       </div>
-      <button class="button spin-button" type="button" onclick={spin} disabled={spinning}
-        >{spinning ? 'Spinning…' : 'Spin a new challenge'}</button
+      <button
+        class="button spin-button quiet-on-phone"
+        type="button"
+        onclick={spin}
+        disabled={spinning}>{spinning ? 'Spinning…' : 'Spin a new challenge'}</button
       >
       <p class="muted wheel-note">
         Locked ingredients stay in place. Free spins never replace today’s challenge.
@@ -109,6 +112,35 @@
         feeling. Work at <strong>{challenge.focalLength.label}</strong> in
         <strong>{challenge.lighting.label.toLowerCase()}</strong>.
       </p>
+      <aside class="challenge-rule">
+        <span>Creative rule</span><strong>{challenge.constraint.label}</strong>
+        <p>{challenge.constraint.hint}</p>
+      </aside>
+      <div class="lens-match">
+        <span>Glass to reach for</span>
+        {#if challenge.matchingLenses.length}
+          <ul class="lens-match-list">
+            {#each challenge.matchingLenses.slice(0, 6) as lens}
+              <li><a href={'/lenses/' + lens.id}>{lens.name}</a></li>
+            {/each}
+          </ul>
+          {#if challenge.matchingLenses.length > 6}
+            <details class="lens-match-more">
+              <summary>Show all {challenge.matchingLenses.length}</summary>
+              <ul class="lens-match-list">
+                {#each challenge.matchingLenses.slice(6) as lens}
+                  <li><a href={'/lenses/' + lens.id}>{lens.name}</a></li>
+                {/each}
+              </ul>
+            </details>
+          {/if}
+        {:else}
+          <p>
+            No owned lens covers {challenge.focalLength.label}; treat it as an invitation to
+            improvise.
+          </p>
+        {/if}
+      </div>
       <div class="challenge-ingredients">
         {#each challengeDimensions as dimension}
           <article>
@@ -124,18 +156,6 @@
             >
           </article>
         {/each}
-      </div>
-      <aside class="challenge-rule">
-        <span>Creative rule</span><strong>{challenge.constraint.label}</strong>
-        <p>{challenge.constraint.hint}</p>
-      </aside>
-      <div class="lens-match">
-        <span>Glass to reach for</span>{#if challenge.matchingLenses.length}<p>
-            {challenge.matchingLenses.map((lens) => lens.name).join(' · ')}
-          </p>{:else}<p>
-            No owned lens covers {challenge.focalLength.label}; treat it as an invitation to
-            improvise.
-          </p>{/if}
       </div>
     </section>
   </div>

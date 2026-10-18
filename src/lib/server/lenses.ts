@@ -189,6 +189,12 @@ export function listLenses(params: URLSearchParams): LensView[] {
   } else if (era === 'modern') {
     where.push('l.release_year IS NOT NULL AND l.release_year >= 2000');
   }
+  const photo = params.get('photo');
+  if (photo === 'none') {
+    where.push('NOT EXISTS (SELECT 1 FROM lens_photos p WHERE p.lens_id = l.id)');
+  } else if (photo === 'has') {
+    where.push('EXISTS (SELECT 1 FROM lens_photos p WHERE p.lens_id = l.id)');
+  }
   const focalLength = Number(params.get('focal'));
   if (Number.isFinite(focalLength) && focalLength > 0) {
     where.push(
