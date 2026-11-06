@@ -51,6 +51,13 @@
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
   }
 
+  // The page wrapper is animated (transform / will-change), which turns it into the containing
+  // block for fixed children. Mounting the lightbox on <body> keeps it viewport-sized.
+  function portal(node: HTMLElement) {
+    document.body.appendChild(node);
+    return { destroy: () => node.remove() };
+  }
+
   // Move focus into the dialog and lock body scroll while it is open.
   $effect(() => {
     if (lightboxOpen) {
@@ -127,6 +134,7 @@
   {#if lightboxOpen}
     <div
       class="lightbox"
+      use:portal
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
